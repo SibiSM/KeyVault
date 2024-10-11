@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config();
 const { DefaultAzureCredential } = require('@azure/identity');
 const { SecretClient } = require('@azure/keyvault-secrets');
 
@@ -16,21 +17,27 @@ const client = new SecretClient(KVUri, credential);
 
 app.get('/', async (req, res) => {
     try {
-        // Fetch secret from Azure Key Vault
+        // Logging the environment variables
+        console.log('Key Vault Name:', process.env.KEY_VAULT_NAME);
+        console.log('Secret Name:', process.env.SECRET_NAME);
+
         const secretName = process.env.SECRET_NAME; // Get from environment variable
+        if (!secretName) {
+            throw new Error("SECRET_NAME is not defined");
+        }
+        if (!process.env.KEY_VAULT_NAME) {
+            throw new Error("KEY_VAULT_NAME is not defined");
+        }
+
+        // Attempt to retrieve the secret
         const retrievedSecret = await client.getSecret(secretName);
-        
-        // Return the secret value
         res.send(`The secret value is: ${retrievedSecret.value}`);
     } catch (err) {
-        console.error('Error retrieving secret:', err);
-        res.status(500).send('Error retrieving secret');
+        console.error('Error retrieving secret:', err.message);
+        res.status(500).send('Error retrieving secret: ' + err.message); // Send back the error message
     }
 });
 
-app.get('/health', (req, res) => {
-    res.status(200).send('OK');
-});
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}/`);
