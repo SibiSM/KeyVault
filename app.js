@@ -8,6 +8,10 @@ app.get('/', (req, res) => {
     res.send('<h1>Welcome to the Simple Node.js Web App!</h1>');
 });
 
+app.get('/another', (req, res) => {
+    res.send('<h1>Welcome to the Simple Node.js Web App!</h1>');
+});
+
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}/`);
 });
