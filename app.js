@@ -31,9 +31,10 @@ app.get('/api/getSecret', async (req, res) => {
 
         // Attempt to retrieve the secret
         const retrievedSecret = await client.getSecret(secretName);
+        console.log(`Retrieved secret: ${retrievedSecret.value}`);  // Log the secret value (for debugging)
         res.json({ secret: retrievedSecret.value }); // Send the secret as a JSON response
     } catch (err) {
-        console.error('Error retrieving secret:', err.message);
+        console.error('Error retrieving secret:', err.stack);  // Log full stack trace for debugging
         res.status(500).json({ error: 'Error retrieving secret: ' + err.message }); // Send back the error message as JSON
     }
 });
