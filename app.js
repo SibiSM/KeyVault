@@ -1,21 +1,36 @@
 const express = require('express');
+require('dotenv').config();
 const path = require('path');
+const { DefaultAzureCredential } = require('@azure/identity');
+const { SecretClient } = require('@azure/keyvault-secrets');
 
 // Set up Express app
 const app = express();
-const port = process.env.PORT || 3000; // Use PORT from environment or default to 3000
+const port = process.env.PORT || 3000; // Use environment PORT or default to 3000
 
-// Serve static files from the public directory
+// Azure Key Vault details
+const keyVaultName = process.env.KEY_VAULT_NAME;
+const KVUri = `https://${keyVaultName}.vault.azure.net`;
+
+// Use DefaultAzureCredential to authenticate
+const credential = new DefaultAzureCredential();
+const client = new SecretClient(KVUri, credential);
+
+// Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Route for the root path
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html')); // Serve the HTML file
-});
+// API route to retrieve secret
+app.get('/api/getSecret', async (req, res) => {
+    try {
+        const secretName = process.env.SECRET_NAME;
+        if (!secretName) throw new Error("SECRET_NAME is not defined");
 
-// Route for another path
-app.get('/another', (req, res) => {
-    res.send('<h1>Welcome to the Another Page!</h1>');
+        const retrievedSecret = await client.getSecret(secretName);
+        res.json({ secret: retrievedSecret.value });
+    } catch (err) {
+        console.error('Error retrieving secret:', err.message);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Start the server

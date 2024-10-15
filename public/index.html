@@ -3,9 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome</title>
+    <title>Azure Key Vault Secret</title>
 </head>
 <body>
-    <h1>Welcome to the Simple Node.js Web App!</h1>
+    <h1>Retrieve Secret from Azure Key Vault</h1>
+    <button id="getSecretButton">Get Secret</button>
+    <p id="secretValue"></p>
+
+    <script>
+        document.getElementById('getSecretButton').addEventListener('click', () => {
+            fetch('/api/getSecret')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.secret) {
+                        document.getElementById('secretValue').innerText = `Secret Value: ${data.secret}`;
+                    } else {
+                        document.getElementById('secretValue').innerText = 'Error retrieving secret';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('secretValue').innerText = 'Error retrieving secret';
+                });
+        });
+    </script>
 </body>
 </html>
