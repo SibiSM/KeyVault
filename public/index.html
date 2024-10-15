@@ -3,29 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Azure Key Vault Secret</title>
-</head>
-<body>
-    <h1>Retrieve Secret from Azure Key Vault</h1>
-    <button id="getSecretButton">Get Secret</button>
-    <p id="secretValue"></p>
-
+    <title>Secret Fetcher</title>
     <script>
-        document.getElementById('getSecretButton').addEventListener('click', () => {
+        // Fetch the secret from the backend when the page loads
+        document.addEventListener('DOMContentLoaded', function () {
             fetch('/api/getSecret')
                 .then(response => response.json())
                 .then(data => {
                     if (data.secret) {
-                        document.getElementById('secretValue').innerText = `Secret Value: ${data.secret}`;
-                    } else {
-                        document.getElementById('secretValue').innerText = 'Error retrieving secret';
+                        document.getElementById('secret-value').textContent = data.secret;
+                    } else if (data.error) {
+                        document.getElementById('secret-value').textContent = 'Error: ' + data.error;
                     }
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('secretValue').innerText = 'Error retrieving secret';
+                .catch(err => {
+                    document.getElementById('secret-value').textContent = 'Error: ' + err.message;
                 });
         });
     </script>
+</head>
+<body>
+    <h1>Welcome to the Simple Node.js Web App!</h1>
+    <h2>Fetched Secret:</h2>
+    <p id="secret-value">Fetching secret...</p>
 </body>
 </html>
