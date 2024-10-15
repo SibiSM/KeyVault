@@ -19,6 +19,7 @@ const credential = new DefaultAzureCredential();
 const client = new SecretClient(KVUri, credential);
 
 // API route to fetch secret from Azure Key Vault
+// API route to fetch secret from Azure Key Vault
 app.get('/api/getSecret', async (req, res) => {
     try {
         const secretName = process.env.SECRET_NAME; // Get from environment variable
